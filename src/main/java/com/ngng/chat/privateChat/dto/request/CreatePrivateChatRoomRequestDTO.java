@@ -7,7 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class CreatePrivateChatRequestDTO {
-    Long sellerId;
+public class CreatePrivateChatRoomRequestDTO {
+    Long productId;
     Long buyerId;
+    Long sellerId;
 }

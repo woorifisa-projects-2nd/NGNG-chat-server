@@ -1,6 +1,7 @@
 package com.ngng.chat.product.entity;
 
 import com.ngng.chat.thumbnail.entity.Thumbnail;
+import com.ngng.chat.transaction.entity.TransactionDetails;
 import com.ngng.chat.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import java.sql.Timestamp;
+import java.util.List;
+
 import jakarta.persistence.Table;
 
 
@@ -30,34 +33,27 @@ public class Product {
     private Long price;
 
     @ColumnDefault("true")
-    @Column(name = "is_escrow")
     private Boolean isEscrow;
 
     @ColumnDefault("false")
     private Boolean discountable;
 
-    @Column(name = "purchase_at")
     private String purchaseAt;
 
     @ColumnDefault("true")
-    @Column(name = "for_sale")
     private Boolean forSale;
 
     @ColumnDefault("true")
     private Boolean visible;
 
     @ColumnDefault("false")
-    @Column(name = "free_shipping")
     private Boolean freeShipping;
 
-    @Column(name = "refreshed_at")
     private Timestamp refreshedAt;
 
     @CreationTimestamp
-    @Column(name = "created_at")
     private Timestamp createdAt;
 
-    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     @ManyToOne
@@ -66,5 +62,12 @@ public class Product {
 
     @OneToOne(mappedBy = "product")
     private Thumbnail thumbnail;
+
+    @OneToOne(mappedBy = "product")
+    private TransactionDetails transactionDetails;
+
+    @OneToMany
+    @JoinColumn(name = "product_id")
+    private List<TransactionRequest> requestList;
 
 }

@@ -1,12 +1,12 @@
-package com.ngng.chat.privateChatMessage.entity;
+package com.ngng.chat.privateChat.entity;
 
 import com.ngng.chat.user.entity.User;
-import com.ngng.chat.privateChat.entity.PrivateChat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -21,28 +21,19 @@ import java.sql.Timestamp;
 public class PrivateChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_id")
-    private Long id;
-
-
+    Long privateChatId;
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(name = "message")
-    private String message;
-
+    @JoinColumn(name="user_id")
+    User user;
+    String message;
     @ColumnDefault("true")
-    private Boolean visible;
-
+    Boolean visible;
     @ManyToOne
-    @JoinColumn(name = "private_chat_id")
-    private PrivateChat privateChatId;
-
+    @JoinColumn(name="private_chat_room_id")
+    PrivateChatRoom privateChatRoom;
     @CreationTimestamp
-    @Column(name = "created_at")
-    private Timestamp createdAt;
-
-    @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    Timestamp createdAt;
+    @UpdateTimestamp
+    Timestamp updatedAt;
+    String contentType;
 }
