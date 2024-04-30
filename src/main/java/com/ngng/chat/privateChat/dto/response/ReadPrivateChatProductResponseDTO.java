@@ -23,5 +23,5 @@ public class ReadPrivateChatProductResponseDTO {
     ReadChatRoomTransactionDetails transactionDetails;
     UserDTO seller;
     UserDTO buyer;
-    List<TransactionRequestDTO> requests;
+   TransactionRequestDTO request;
 }

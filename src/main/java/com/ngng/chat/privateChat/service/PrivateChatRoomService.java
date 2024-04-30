@@ -8,7 +8,9 @@ import com.ngng.chat.privateChat.entity.PrivateChatRoom;
 import com.ngng.chat.privateChat.respository.PrivateChatMessageReadRepository;
 import com.ngng.chat.privateChat.respository.PrivateChatMessageRepository;
 import com.ngng.chat.privateChat.respository.PrivateChatRoomRepository;
+import com.ngng.chat.product.dto.TransactionRequestDTO;
 import com.ngng.chat.product.entity.Product;
+import com.ngng.chat.product.entity.TransactionRequest;
 import com.ngng.chat.transaction.entity.TransactionDetails;
 import com.ngng.chat.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,40 +62,51 @@ public class PrivateChatRoomService {
         return privateChatRoomRepository.findAllBySellerIdOrBuyerId(userId, userId).stream().map(data -> {
             // 해당 채팅방에서 안 읽은 메시지가 몇 개인지 구하는 함수 호출
             Long unreadMessageCount;
-            RecentMessageDTO recentMessage;
+            RecentMessageDTO recentMessage = null;
             PrivateChatMessage readMessage = privateChatMessageReadRepository.findByPrivateChatRoomIdAndUserId(data.getId(), userId).getPrivateChatMessage();
             List<PrivateChatMessage> recentMessages;
 
             if(readMessage == null) {
-                log.info("일긍메시지 null");
-                recentMessages= privateChatMessageRepository.findAllByPrivateChatRoomIdAndPrivateChatIdGreaterThanEqual(data.getId(), -1L);
-                unreadMessageCount = 0L;
+                System.out.println("readMessage = null ");
+               unreadMessageCount = 0L;
                
             }else{
-                log.info("PrivateChatRoomId " +data.getId() +" PrivateChatId "+ readMessage.getPrivateChatId());
+                System.out.println("readMessage =  "+ readMessage.getPrivateChatId());
 
-
-                recentMessages = privateChatMessageRepository.findAllByPrivateChatRoomIdAndPrivateChatIdGreaterThanEqual(data.getId(), readMessage.getPrivateChatId() ==null?-1L:readMessage.getPrivateChatId());
+                // TODO 왜 equal로 바꿨었지?
+                recentMessages = privateChatMessageRepository.findAllByPrivateChatRoomIdAndPrivateChatIdGreaterThan
+                        (data.getId(), readMessage.getPrivateChatId());
+                System.out.println("recentMessages.size() = " + recentMessages.size());
                 unreadMessageCount = Long.parseLong(Integer.toString(recentMessages.size()));
-            }
-            log.info("recentMessag", recentMessages);
-            PrivateChatMessage temp = recentMessages.stream().max(Comparator.comparingLong(PrivateChatMessage::getPrivateChatId)).orElse(null);
-            log.info("temp", temp);
-            if(temp == null) {
-                recentMessage = null;
-            }else{
                 recentMessage = RecentMessageDTO.builder()
-                        .message(temp.getMessage())
-                        .createdAt(temp.getCreatedAt())
-                        .contentType(temp.getContentType())
+                        .message(readMessage.getMessage())
+                        .createdAt(readMessage.getCreatedAt())
+                        .contentType(readMessage.getContentType())
                         .build();
             }
+
+
+
+
+
+            TransactionRequest request = data.getProduct().getRequestList()
+                    .stream()
+                    .filter(transactionRequest -> Objects.equals(transactionRequest.getBuyer().getId(), data.getBuyer().getId()))
+                    .findFirst().orElse(null);
+           // log.info("request id = ", request.getTransactionRequestId());
+
             return ReadPrivateChatRoomResponseDTO.builder()
+                    .transactionDetails(data.getProduct().getTransactionDetails() == null ? null :ReadChatRoomTransactionDetails.builder()
+                            .address(data.getProduct().getTransactionDetails().getAddress())
+                            .status(data.getProduct().getTransactionDetails().getStatus())
+                            .id(data.getProduct().getTransactionDetails().getId())
+                            .build())
                     .recentMessage(recentMessage)
                     .product(ChatRoomProductDTO.builder()
                             .productId(data.getProduct().getId())
                             .productThumbnailUrl(data.getProduct().getThumbnail().getThumbnailUrl())
                             .productTitle(data.getProduct().getTitle())
+
                             .build())
                     .privateChatRoomId(data.getId())
                     .createdAt(data.getCreatedAt())
@@ -107,6 +121,7 @@ public class PrivateChatRoomService {
                             .nickname(data.getSeller().getNickname())
                             .build())
                     .unreadMessageCount(unreadMessageCount)
+                    .request( request== null ? null :new TransactionRequestDTO( request))
                     .build();
         }).toList();
     }

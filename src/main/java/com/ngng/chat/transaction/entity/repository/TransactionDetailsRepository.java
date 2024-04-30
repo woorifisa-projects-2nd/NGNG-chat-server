@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TransactionDetailsRepository extends JpaRepository<TransactionDetails, Long> {
-    public Optional<TransactionDetails> findByProductIdAndConsumerId(Long productId, Long consumerId);
+    public Optional<TransactionDetails> findByProductId(Long productId);
 }

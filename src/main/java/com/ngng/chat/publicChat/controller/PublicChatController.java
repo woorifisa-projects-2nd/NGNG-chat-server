@@ -12,6 +12,7 @@ import com.ngng.chat.publicChat.dto.request.UpdatePublicChatRequestDTO;
 import com.ngng.chat.publicChat.dto.response.ReadPublicChatResponseDTO;
 import com.ngng.chat.publicChat.service.PublicChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,6 +24,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class PublicChatController {
 
     private final PublicChatService publicChatService;
@@ -76,12 +78,13 @@ public class PublicChatController {
         return ResponseEntity.ok(privateChatMessageService.readAllByPrivateChatRoomId(chatRoomId, userId));
     }
 
-    @MessageMapping("/{productId}/{buyerId}")
-    @SendTo("/private-chats/{productId}/{buyerId}")
-    ResponseEntity<PrivateChatMessageDTO> createMessage(@DestinationVariable Long productId, @DestinationVariable Long buyerId, @RequestBody CreatePrivateChatMessageRequestDTO request){
-        System.out.println("productId = " + productId);
-        System.out.println("buyerId = " + buyerId);
-        System.out.println("request = " + request.getMessage());
+    @MessageMapping("/{productId}/{buyerId}/{sendToId}")
+    @SendTo({"/private-chats/{productId}/{buyerId}", "/alarms/{sendToId}"})
+    ResponseEntity<PrivateChatMessageDTO> createMessage(@DestinationVariable Long productId,
+                                                        @DestinationVariable Long buyerId,
+                                                        @DestinationVariable Long sendToId,
+                                                        @RequestBody CreatePrivateChatMessageRequestDTO request){
+    log.info("프라이빗 메시지 알림 보낼 곳: "+String.valueOf(sendToId));
         return ResponseEntity.ok(privateChatMessageService.create(request));
     }
 }

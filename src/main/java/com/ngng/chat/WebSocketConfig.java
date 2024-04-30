@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/public-chats", "/private-chats");
+		config.enableSimpleBroker("/public-chats", "/private-chats", "/alarms");
 		config.setApplicationDestinationPrefixes("/chats");
 	}
 

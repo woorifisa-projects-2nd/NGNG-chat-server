@@ -15,4 +15,5 @@ public class PrivateChatMessageDTO {
     Timestamp createdAt;
     UserDTO user;
     String contentType;
+    String productThumbnail;
 }
