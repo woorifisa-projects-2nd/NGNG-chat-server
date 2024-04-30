@@ -42,8 +42,8 @@ public class PrivateChatMessageService {
         privateChatMessageReadService.update(message.getUserId(),message.getPrivateChatRoomId(), newMessage.getPrivateChatId());
         PrivateChatRoom found = privateChatRoomRepository.findById(message.getPrivateChatRoomId()).orElse(null);
 
-        User target = Objects.equals(message.getUserId(), found.getSeller().getId()) ? found.getBuyer(): found.getSeller();
-
+        User target = Objects.equals(message.getUserId(), found.getSeller().getId()) ?  found.getSeller():found.getBuyer();
+        //sender : 보내는 사람
 
         return PrivateChatMessageDTO.builder()
                 .chatId(newMessage.getPrivateChatId())
