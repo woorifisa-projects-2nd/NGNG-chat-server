@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 public class PublicChat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_room_id")
+    @Column(name = "public_chat_id")
     private Long id;
 
     private String message;
@@ -31,7 +31,6 @@ public class PublicChat {
     @ColumnDefault("false")
     private Boolean isImage;
 
-    @Column(name = "product_id")
     private Long productId;
 
     @ManyToOne
