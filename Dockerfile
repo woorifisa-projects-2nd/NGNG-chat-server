@@ -6,7 +6,8 @@ COPY . .
 RUN dos2unix ./gradlew
 
 RUN chmod +x ./gradlew
-RUN ./gradlew build
+# 테스트 할시 yaml 파일이 필요함
+RUN ./gradlew build --exclude-task test
 
 # App
 FROM eclipse-temurin:17-jre-alpine
